@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>出版物检索和推荐系统</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        body{
+            background-color: #fff;
+            padding: 50px;
+        }
+        .tip{
+            padding-left: 100px;
+            padding-bottom: 10px;
+            font-size: 16px;
+            line-height: 18px;
+        }
+        .search-box{
+            width: 560px;
+            height: 38px;
+            border: 2px solid #ff2832;
+            margin: auto;
+        }
+        .input-box{
+            float: left;
+            height: 18px;
+            line-height: 18px;
+            font-size: 12px;
+            width: 500px;
+            padding: 10px 0px 10px 10px;
+            border: none;
+            outline: none;
+            border: 0;
+        }
+        .input-button{
+            width: 48px;
+            height: 38px;
+            float: right;
+            background: url(http://img63.ddimg.cn/upload_img/00459/home/head_sprite.png) no-repeat 0 -347px;
+            text-align: center;
+            color: #fff;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+        }
+        .dataAnalysis{
+            width: 100px;
+            height: 40px;
+            float: right;
+        }
+        .nav{
+            /*border-bottom: 2px solid #ff2328;*/
+            width: 1200px;
+            margin: 25px auto 20px;
+        }
+        .item{
+            float: left;
+            height: 35px;
+            width: 32.9%;
+            background-color: #fdebec;
+            color: #ff2328;
+            font: 16px/35px Microsoft YaHei;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid #fdd8da;
+            border-bottom: 0;
+            margin-right: 3px;
+        }
+        .item.active{
+            background-color: #ff2328!important;
+            color: #fff;
+            border-color: #ff2328;
+        }
+        .nav:last-child::after{
+            clear: both;
+            content: " ";
+            display: block;
+            font-size: 0;
+            height: 0;
+            visibility: hidden;
+        }
+        .body{
+            width: 1200px;
+        }
+        .body:last-child::after{
+            clear: both;
+            content: " ";
+            display: block;
+            font-size: 0;
+            height: 0;
+            visibility: hidden;
+        }
+        .left{
+            width: 960px;
+            overflow: hidden;
+            position: relative;
+            float: left;
+        }
+        .left .content-item{
+            height: 242px;
+            width: 960px;
+            position: relative;
+            background: #fff;
+            -webkit-transition: all .2s ease-in-out;
+            -moz-transition: all .2s ease-in-out;
+            -o-transition: all .2s ease-in-out;
+            -ms-transition: all .2s ease-in-out;
+            transition: all .2s ease-in-out;
+            padding-left: 20px;
+        }
+        .content-item .inner-left{
+            position: absolute;
+            left: 20px;
+            top: 21px;
+            display: block;
+            width: 200px;
+            height: 200px;
+        }
+        .inner-left img{
+            width: 100%;
+            max-height: 200px;
+        }
+        .content-item .inner-right{
+            position: absolute;
+            left: 240px;
+            top: 21px;
+            /*height: 20px;*/
+            width: 720px;
+            overflow: hidden;
+            font-size: 16px;
+            line-height: 20px;
+        }
+        .inner-right p:first-child{
+            font-size: 20px;
+            line-height: 24px;
+            font-weight: bold;
+        }
+        .right{
+            width: 222px;
+            float: right;
+            overflow: hidden;
+        }
+        .right .title{
+            font-size: 24px;
+            line-height: 28px;
+            font-weight: bold;
+        }
+        .right .recommend-item{
+            padding: 12px 10px 5px 10px;
+            background: #fff;
+            -webkit-transition: all .2s ease-in-out;
+            -moz-transition: all .2s ease-in-out;
+            -o-transition: all .2s ease-in-out;
+            -ms-transition: all .2s ease-in-out;
+            transition: all .2s ease-in-out;
+        }
+        .recommend-item .inner-top{
+            width: 198px;
+            height: 198px;
+            display: block;
+            border: 1px solid #ecebeb;
+            overflow: hidden;
+        }
+        .inner-top img{
+            width: 100%;
+            height: 100%;
+        }
+        .recommend-item .inner-bottom{
+            line-height: 18px;
+            /*height: 18px;*/
+            width: 210px;
+            overflow: hidden;
+            word-break: break-all;
+            word-wrap: break-word;
+            padding-top: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <p class="tip" c>请输入您要查找的出版物：</p>
+    <input class="dataAnalysis" type="button" value="数据分析" onclick="goDataAnalysis()" />
+    <div class="search-box">
+        <input id="searchContent" class="input-box" type="text" /><input class="input-button" type="button" onclick="getInfo()" />
+    </div>
+    <div class="nav">
+        <span id="book" class="item active" onclick="changeTab('Book')">图书</span>
+        <span id="movie" class="item" onclick="changeTab('Film')">电影</span>
+        <span id="game" class="item" onclick="changeTab('Game')">游戏</span>
+    </div>
+</div>
+<div class="body">
+    <div class="left" id="contentList">
+        <div class="content-item">
+            <div class="inner-left"></div>
+            <div class="inner-right"></div>
+        </div>
+    </div>
+    <div class="right">
+        <p class="title">您可能会喜欢：</p>
+        <div id="recommendList">
+            <!--<div class="recommend-item">-->
+                <!--<div class="inner-top"></div>-->
+                <!--<div class="inner-bottom"></div>-->
+            <!--</div>-->
+        </div>
+
+    </div>
+</div>
+<script src="./lib/SPARQLWrapper.js"></script>
+<script type="text/javascript">
+    var publicationType = "Book";
+    var clock = false;
+    function changeTab(type){
+        if(clock){return}
+        publicationType = type;
+        if(type =="Book"){
+            book.className = "item active";
+            movie.className = "item";
+            game.className = "item"
+        }else if(type =="Film"){
+            movie.className = "item active";
+            book.className = "item";
+            game.className = "item"
+        }else{
+            game.className = "item active";
+            book.className = "item";
+            movie.className = "item"
+        }
+        $("contentList").innerHTML ="";
+        $("recommendList").innerHTML ="";
+    }
+    function search(){
+        console.log(searchContent.value)
+    }
+    var $ = function(id){
+            return document.getElementById(id);
+        },
+        sparql = new SPARQLWrapper("http://dbpedia.org/sparql"),
+        results = [];
+
+    function getInfo(){
+        var name = searchContent.value;
+        name = name.replace(/\s/g, "_");
+        if(name==''){return}
+        var command = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+            "PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+            "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n" +
+            "PREFIX dct: <http://purl.org/dc/terms/>\n" +
+            "\n" +
+            "SELECT distinct ?film ?name ?director ?country ?thumbnail WHERE {\n" +
+            "?film rdf:type dbo:"+publicationType+";\n" +
+            "      foaf:name ?name;\n" +
+            "      dct:subject ?subject\n"+
+            "      optional {\n" +
+            "       ?film dbp:country ?country\n" +
+            "      }\n" +
+            "      optional {\n" +
+            "       ?film dbo:director ?director\n" +
+            "      }\n" +
+            "      optional {\n" +
+            "          ?film  dbo:thumbnail ?thumbnail\n" +
+            "      }\n" +
+            "FILTER ((regex(?name, '"+name+"'))) .\n" +
+            "          }";
+        clock = true;
+        sparql.setQuery(command);
+        sparql.query(function(json){
+            showInfo((eval("(" + json + ")")).results.bindings);
+        });
+    }
+    var subjectList =[];
+    function showInfo(results){
+        sessionStorage.setItem('dataResults',JSON.stringify(results));
+        var text = "";
+        subjectList =[];
+        if(results.length !== 0){
+            for(var i = 0; i < results.length; i++){
+                var imgUrl = results[i].thumbnail && results[i].thumbnail.value || '';
+                var arr = results[i].director && results[i].director.value.split('/')||[];
+                var director = arr[arr.length-1] || "未知";
+                var country = results[i].country&&results[i].country.value || "未知";
+                if(publicationType == "Film"){
+                    text +='<div class="content-item">'
+                        +'<div class="inner-left"><img src="'+imgUrl+'"></div>'
+                        +'<div class="inner-right"><p>名称：'+results[i].name.value+'</p>'
+                        +'<p>导演：'+director+'</p><p>国家：'+country+'</p><p><a href=" '+results[i].film.value+'">详情介绍</a></p></div>'
+                        +'</div>'
+                }else{
+                    text +='<div class="content-item">'
+                        +'<div class="inner-left"><img src="'+imgUrl+'"></div>'
+                        +'<div class="inner-right"><p>名称：'+results[i].name.value+'</p>'
+                        +'<p>国家：'+country+'</p><p><a href=" '+results[i].film.value+'">详情介绍</a></p></div>'
+                        +'</div>'
+                }
+
+
+            }
+             $("contentList").innerHTML = text;
+        }else{
+            $("contentList").innerHTML = "<p style='text-align: center;margin:20px auto'>没有任何相关信息！</p>";
+        }
+        getSubject();
+    }
+    function getSubject() {
+        var command2= "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+            "PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+            "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n" +
+            "PREFIX dct: <http://purl.org/dc/terms/>\n" +
+            "\n" +
+            "SELECT distinct ?subject WHERE {\n" +
+            "?film rdf:type dbo:"+publicationType+";\n" +
+            "      foaf:name ?name;\n" +
+            "      dbp:country ?country;\n" +
+            "      dct:subject ?subject\n"+
+            "      optional {\n" +
+            "       ?film dbo:director ?director\n" +
+            "      }\n" +
+            "      optional {\n" +
+            "          ?film  dbo:thumbnail ?thumbnail\n" +
+            "      }\n" +
+            "FILTER ((regex(?name, '"+name+"'))) .\n" +
+            "          }";
+        sparql.setQuery(command2);
+        sparql.query(function(json){
+            getRecommendInfo((eval("(" + json + ")")).results.bindings);
+        });
+    }
+    function getRecommendInfo(results){
+        subjectList =[];
+        if(results.length !== 0) {
+            for (var i = 0; i < results.length; i++) {
+                if (i < 3) {
+                    subjectList.push(results[i].subject.value);
+                }
+            }
+        }else{
+            $("recommendList").innerHTML = "<p style='text-align: center;margin:20px auto'>没有任何相关信息！</p>";
+        clock = false;
+        }
+        var name = searchContent.value;
+        name = name.replace(/\s/g, "_");
+        if(name==''){return}
+        var command = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+            "PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+            "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n" +
+            "PREFIX dct: <http://purl.org/dc/terms/>\n" +
+            "\n" +
+            "SELECT distinct ?film ?name ?director ?subject ?thumbnail WHERE {\n" +
+            "?film rdf:type dbo:"+publicationType+";\n" +
+            "      foaf:name ?name;\n" +
+            "      dbp:country ?country;\n" +
+            "      dct:subject <"+subjectList[0]+">\n"+
+            "      optional {\n" +
+            "       ?film dbo:director ?director\n" +
+            "      }\n" +
+            "      optional {\n" +
+            "          ?film  dbo:thumbnail ?thumbnail\n" +
+            "      }\n" +
+            "FILTER (!(regex(?name, '"+name+"'))) .\n" +
+         "}";
+        sparql.setQuery(command);
+        sparql.query(function(json){
+            showRecommendInfo((eval("(" + json + ")")).results.bindings);
+        });
+    }
+    function showRecommendInfo(results){
+        var text = "";
+        if(results.length !== 0){
+            for(var i = 0; i < results.length &&i < 10; i++){
+                var imgUrl = results[i].thumbnail && results[i].thumbnail.value || '';
+                var arr = results[i].director && results[i].director.value.split('/')||[];
+                var director = arr[arr.length-1];
+                if(publicationType == "Film"){
+                    text +='<div class="recommend-item">'
+                        +'<div class="inner-top"><img src="'+imgUrl+'"></div>'
+                        +'<div class="inner-bottom"><p>名称：'+results[i].name.value+'</p>'
+                        +'<p>导演：'+director+'</p><p><a href=" '+results[i].film.value+'">详情介绍</a></p></div>'
+                        +'</div>'
+                }else{
+                    text +='<div class="recommend-item">'
+                        +'<div class="inner-top"><img src="'+imgUrl+'"></div>'
+                        +'<div class="inner-bottom"><p>名称：'+results[i].name.value+'</p>'
+                        +'<p><a href=" '+results[i].film.value+'">详情介绍</a></p></div>'
+                        +'</div>'
+                }
+
+
+            }
+            $("recommendList").innerHTML = text;
+        }else{
+            $("recommendList").innerHTML = "<p style='text-align: center;margin:20px auto'>没有任何相关信息！</p>";
+        }
+        clock = false;
+    }
+    function goDataAnalysis() {
+        window.location.href = "./dataAnalysis.html"
+    }
+    getInfo();
+</script>
+</body>
+</html>
